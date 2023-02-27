@@ -1,6 +1,4 @@
-import React, { useState, useEffect, createContext, useContext } from "react";
-// import axios from "axios";
-
+import React, { useState, createContext, useContext } from "react";
 
 const Context = createContext();
 
@@ -22,38 +20,39 @@ export const StateContext = ({ children }) => {
         setIseditting([...iseditting, false]);
     }
 
-    const handleedit = id => {
-        setNewTask(todoList.find(task => task.id === id).name);
+    // Check if the task in edit mode
+    const handleedit = idx => {
+        setNewTask(todoList.find((task, index) => index === idx)?.name);
         setIseditting(prev => {
             return prev.map((value, index) => {
-                if (id === index)
+                if (idx === index)
                     return !value;
                 return value;
             })
         })
     }
 
-    const editTask = id => {
-        const newTodoList = [...todoList];
-        newTodoList[id] = { ...newTodoList[id], name: newTask };
-        setTodoList(newTodoList);
-        handleedit(id);
+    const editTask = idx => {
+        setTodoList(prev => prev[idx] = { ...prev[idx], name: newTask });
+        handleedit(idx);
         setNewTask("");
     }
 
-    const handleChecked = id => {
+    // To check if the task is marked or not
+    const handleChecked = idx => {
         setIsChecked(prev => {
             return prev.map((value, index) => {
-                if (id === index)
+                if (idx === index)
                     return !value;
                 return value;
             })
         })
     }
 
-    const deleteTask = id => {
-        const newTodoList = todoList.filter((task) => task.id != id);
-        setTodoList(newTodoList);
+    const deleteTask = idx => {
+        setTodoList(prev => prev.filter((task, index) => index != idx));
+        setIsChecked(prev => prev.filter((task, index) => index != idx));
+        setIseditting(prev => prev.filter((task, index) => index != idx));
     }
 
     return (
